@@ -1,0 +1,21 @@
+# Dockerfile for Next.js frontend (development)
+
+FROM node:18-alpine
+
+WORKDIR /app
+
+# 依存関係のインストール
+COPY package*.json ./
+RUN npm ci
+
+# アプリケーションコード
+COPY . .
+
+# ビルド（オプション：本番用）
+# RUN npm run build
+
+# ポート公開
+EXPOSE 3000
+
+# 開発サーバー起動
+CMD ["npm", "run", "dev"]
