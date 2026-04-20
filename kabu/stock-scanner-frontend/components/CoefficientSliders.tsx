@@ -23,12 +23,12 @@ export const CoefficientSliders: React.FC = () => {
   const valueKeys = ['w_per', 'w_pbr', 'w_roe', 'w_growth'];
 
   return (
-    <div className="bg-white rounded-lg p-6 shadow-lg mb-6">
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl font-bold text-gray-800">アルゴリズム係数</h2>
+    <div className="bg-white rounded-lg p-4 md:p-6 shadow-lg mb-6 mx-4 md:mx-0 scroll-container">
+      <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-4 gap-4">
+        <h2 className="text-lg md:text-xl font-bold text-gray-800 no-select">アルゴリズム係数</h2>
         <button
           onClick={() => setShowAdvanced(!showAdvanced)}
-          className="text-sm px-3 py-1 bg-gray-200 rounded hover:bg-gray-300 transition"
+          className="w-full md:w-auto text-xs md:text-sm px-3 py-2 bg-gray-200 rounded hover:bg-gray-300 transition active:scale-95 touch-manipulation"
         >
           {showAdvanced ? '基本に戻す' : '詳細設定'}
         </button>
@@ -36,8 +36,8 @@ export const CoefficientSliders: React.FC = () => {
 
       {/* モメンタム係数 */}
       <div className="mb-6">
-        <h3 className="font-semibold text-gray-700 mb-4">モメンタム指標</h3>
-        <div className="space-y-4">
+        <h3 className="font-semibold text-gray-700 mb-4 text-sm md:text-base no-select">モメンタム指標</h3>
+        <div className="space-y-4 md:space-y-5">
           {momentumKeys.map((key) => (
             <div key={key}>
               <div className="flex justify-between mb-2">

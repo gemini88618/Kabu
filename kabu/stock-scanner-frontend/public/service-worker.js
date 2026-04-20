@@ -1,123 +1,90 @@
-// Service Worker for Stock Scanner PWA
-
 const CACHE_NAME = 'stock-scanner-v1';
-const urlsToCache = [
-  '/',
-  '/index.html',
-  '/manifest.json',
-  '/icons/icon-192.png',
-  '/icons/icon-512.png',
+const ASSETS_TO_CACHE = [
+    '/',
+    '/index.html',
+    '/manifest.json',
+    '/icon.png'
 ];
 
-// インストールイベント
+// Install event
 self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      console.log('[Service Worker] Installing and caching app shell');
-      return cache.addAll(urlsToCache).catch((err) => {
-        console.warn('[Service Worker] Error caching URLs:', err);
-      });
-    })
-  );
-  self.skipWaiting();
-});
-
-// アクティベーションイベント
-self.addEventListener('activate', (event) => {
-  event.waitUntil(
-    caches.keys().then((cacheNames) => {
-      return Promise.all(
-        cacheNames.map((cacheName) => {
-          if (cacheName !== CACHE_NAME) {
-            console.log('[Service Worker] Deleting old cache:', cacheName);
-            return caches.delete(cacheName);
-          }
+    event.waitUntil(
+        caches.open(CACHE_NAME).then((cache) => {
+            return cache.addAll(ASSETS_TO_CACHE).catch(() => {
+                // Graceful handling if some assets fail to cache
+                console.log('Some assets failed to cache');
+            });
         })
-      );
-    })
-  );
-  self.clients.claim();
+    );
+    self.skipWaiting();
 });
 
-// フェッチイベント（キャッシュ優先戦略）
+// Activate event
+self.addEventListener('activate', (event) => {
+    event.waitUntil(
+        caches.keys().then((cacheNames) => {
+            return Promise.all(
+                cacheNames
+                    .filter((name) => name !== CACHE_NAME)
+                    .map((name) => caches.delete(name))
+            );
+        })
+    );
+    self.clients.claim();
+});
+
+// Fetch event - Cache first for static assets, network first for API
 self.addEventListener('fetch', (event) => {
-  const { request } = event;
-  const url = new URL(request.url);
+    const url = new URL(event.request.url);
 
-  // API リクエストはネットワーク優先
-  if (url.pathname.startsWith('/api')) {
-    event.respondWith(networkFirst(request));
-    return;
-  }
-
-  // 静的アセットはキャッシュ優先
-  event.respondWith(cacheFirst(request));
-});
-
-// キャッシュ優先戦略
-async function cacheFirst(request) {
-  const cache = await caches.open(CACHE_NAME);
-  const cached = await cache.match(request);
-
-  if (cached) {
-    return cached;
-  }
-
-  try {
-    const response = await fetch(request);
-    if (response.status === 200) {
-      cache.put(request, response.clone());
+    // API requests - network first
+    if (url.pathname.startsWith('/api/')) {
+        event.respondWith(
+            fetch(event.request)
+                .then((response) => {
+                    if (response.ok) {
+                        // Clone and cache the response
+                        const cache_response = response.clone();
+                        caches.open(CACHE_NAME).then((cache) => {
+                            cache.put(event.request, cache_response);
+                        });
+                    }
+                    return response;
+                })
+                .catch(() => {
+                    // Return cached response if network fails
+                    return caches.match(event.request);
+                })
+        );
+        return;
     }
-    return response;
-  } catch (err) {
-    console.error('[Service Worker] Fetch error:', err);
-    return new Response('Offline', { status: 503 });
-  }
-}
 
-// ネットワーク優先戦略
-async function networkFirst(request) {
-  try {
-    return await fetch(request);
-  } catch (err) {
-    const cache = await caches.open(CACHE_NAME);
-    const cached = await cache.match(request);
-    if (cached) {
-      return cached;
-    }
-    return new Response(JSON.stringify({ error: 'Offline' }), {
-      status: 503,
-      headers: { 'Content-Type': 'application/json' },
-    });
-  }
-}
+    // Static assets - cache first
+    event.respondWith(
+        caches
+            .match(event.request)
+            .then((response) => {
+                if (response) {
+                    return response;
+                }
 
-// バックグラウンド同期（オプション）
-self.addEventListener('sync', (event) => {
-  if (event.tag === 'sync-predictions') {
-    event.waitUntil(syncPredictions());
-  }
-});
+                return fetch(event.request)
+                    .then((response) => {
+                        if (!response || response.status !== 200 || response.type === 'error') {
+                            return response;
+                        }
 
-async function syncPredictions() {
-  try {
-    // バックグラウンドで予測データを同期
-    console.log('[Service Worker] Background sync initiated');
-  } catch (err) {
-    console.error('[Service Worker] Sync error:', err);
-  }
-}
+                        const cache_response = response.clone();
+                        caches.open(CACHE_NAME).then((cache) => {
+                            cache.put(event.request, cache_response);
+                        });
 
-// プッシュ通知（オプション）
-self.addEventListener('push', (event) => {
-  const data = event.data?.json?.() ?? {};
-  const options = {
-    body: data.message || 'Stock Scanner update',
-    icon: '/icons/icon-192.png',
-    badge: '/icons/icon-192.png',
-  };
-
-  event.waitUntil(
-    self.registration.showNotification('Stock Scanner', options)
-  );
+                        return response;
+                    })
+                    .catch(() => {
+                        // Return offline page if available
+                        return caches.match('/index.html');
+                    });
+            })
+    );
 });

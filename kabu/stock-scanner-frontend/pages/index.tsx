@@ -77,17 +77,17 @@ export default function Home() {
         <meta name="description" content="AI 駆動の株価上昇確率予測システム" />
       </Head>
 
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4 safe-top safe-bottom">
+      <div className="full-screen bg-gradient-to-br from-blue-50 to-indigo-100 overflow-y-auto scroll-container">
         {/* ヘッダー */}
-        <header className="mb-8">
+        <header className="mb-8 safe-top safe-left safe-right">
           <div className="max-w-6xl mx-auto">
-            <h1 className="text-4xl font-bold text-gray-900 mb-2">📈 Stock Scanner</h1>
-            <p className="text-gray-700">AI 駆動の多期間株価上昇確率予測システム</p>
+            <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">📈 Stock Scanner</h1>
+            <p className="text-sm md:text-base text-gray-700">AI 駆動の多期間株価上昇確率予測システム</p>
           </div>
         </header>
 
         {/* メインコンテンツ */}
-        <main className="max-w-6xl mx-auto">
+        <main className="max-w-6xl mx-auto px-4 md:px-0">
           {/* Period & Market Selection */}
           <div className="bg-white rounded-lg p-6 shadow-lg mb-6">
             <h2 className="text-xl font-bold mb-4">スキャン設定</h2>
@@ -106,14 +106,14 @@ export default function Home() {
           )}
 
           {/* 予測ボタン */}
-          <div className="mb-6 flex gap-4">
+          <div className="mb-6 flex flex-col md:flex-row gap-4 px-4 md:px-0">
             <button
               onClick={handlePredict}
               disabled={isLoading}
-              className={`flex-1 py-4 px-6 rounded-lg font-bold text-white text-lg transition-all ${
+              className={`flex-1 min-h-[48px] md:py-4 px-4 md:px-6 rounded-lg font-bold text-white text-base md:text-lg transition-all active:scale-95 touch-manipulation ${
                 isLoading
                   ? 'bg-gray-400 cursor-not-allowed'
-                  : 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:shadow-lg active:scale-95'
+                  : 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:shadow-lg'
               }`}
             >
               {isLoading ? '🔄 予測実行中...' : '🚀 予測実行'}
@@ -121,7 +121,7 @@ export default function Home() {
             {results.length > 0 && (
               <button
                 onClick={() => setResults([])}
-                className="px-6 py-4 rounded-lg font-bold text-gray-700 bg-white hover:shadow-lg transition-all"
+                className="px-4 md:px-6 min-h-[48px] rounded-lg font-bold text-gray-700 bg-white hover:shadow-lg transition-all active:scale-95 touch-manipulation text-sm md:text-base"
               >
                 クリア
               </button>
@@ -145,33 +145,33 @@ export default function Home() {
 
           {/* 統計情報 */}
           {results.length > 0 && (
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
-              <div className="bg-white rounded-lg p-4 shadow">
-                <div className="text-sm text-gray-600">分析銘柄数</div>
-                <div className="text-3xl font-bold text-blue-600">{stocks.length}</div>
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 md:gap-4 mt-6 px-4 md:px-0">
+              <div className="bg-white rounded-lg p-3 md:p-4 shadow text-center">
+                <div className="text-xs md:text-sm text-gray-600 no-select">分析銘柄数</div>
+                <div className="text-2xl md:text-3xl font-bold text-blue-600">{stocks.length}</div>
               </div>
-              <div className="bg-white rounded-lg p-4 shadow">
-                <div className="text-sm text-gray-600">平均確率</div>
-                <div className="text-3xl font-bold text-green-600">
+              <div className="bg-white rounded-lg p-3 md:p-4 shadow text-center">
+                <div className="text-xs md:text-sm text-gray-600 no-select">平均確率</div>
+                <div className="text-2xl md:text-3xl font-bold text-green-600">
                   {(results.reduce((sum, s) => sum + s.probability, 0) / results.length).toFixed(1)}%
                 </div>
               </div>
-              <div className="bg-white rounded-lg p-4 shadow">
-                <div className="text-sm text-gray-600">買い推奨</div>
-                <div className="text-3xl font-bold text-indigo-600">
+              <div className="bg-white rounded-lg p-3 md:p-4 shadow text-center">
+                <div className="text-xs md:text-sm text-gray-600 no-select">買い推奨</div>
+                <div className="text-2xl md:text-3xl font-bold text-indigo-600">
                   {results.filter((s) => s.recommendation === 'Buy' || s.recommendation === 'Strong Buy').length}
                 </div>
               </div>
-              <div className="bg-white rounded-lg p-4 shadow">
-                <div className="text-sm text-gray-600">期間</div>
-                <div className="text-2xl font-bold text-purple-600">{period.label}</div>
+              <div className="bg-white rounded-lg p-3 md:p-4 shadow text-center">
+                <div className="text-xs md:text-sm text-gray-600 no-select">期間</div>
+                <div className="text-xl md:text-2xl font-bold text-purple-600">{period.label}</div>
               </div>
             </div>
           )}
         </main>
 
         {/* フッター */}
-        <footer className="mt-16 text-center text-gray-600 text-sm">
+        <footer className="mt-16 text-center text-gray-600 text-xs md:text-sm safe-bottom pb-8">
           <p>Stock Scanner v1.0 | AI 駆動の株価予測システム</p>
           <p className="mt-2">投資判断の補助システムです。投資は自己責任でお願いします。</p>
         </footer>
