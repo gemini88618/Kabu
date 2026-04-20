@@ -1,0 +1,90 @@
+{
+  "name": "Stock Price Prediction Scanner",
+  "short_name": "Stocks",
+  "description": "Multi-period stock price prediction with real-time screening",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#1f2937",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-maskable-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icons/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/screenshots/screenshot1.png",
+      "sizes": "540x720",
+      "type": "image/png",
+      "form_factor": "narrow"
+    },
+    {
+      "src": "/screenshots/screenshot2.png",
+      "sizes": "540x720",
+      "type": "image/png",
+      "form_factor": "narrow"
+    }
+  ],
+  "categories": ["finance"],
+  "shortcuts": [
+    {
+      "name": "1週間スクリーン",
+      "short_name": "1週間",
+      "description": "1週間期間のスクリーン結果を表示",
+      "url": "/?period=1w",
+      "icons": [
+        {
+          "src": "/icons/shortcut-1w.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "1ヶ月スクリーン",
+      "short_name": "1ヶ月",
+      "description": "1ヶ月期間のスクリーン結果を表示",
+      "url": "/?period=1m",
+      "icons": [
+        {
+          "src": "/icons/shortcut-1m.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "半年スクリーン",
+      "short_name": "半年",
+      "description": "半年期間のスクリーン結果を表示",
+      "url": "/?period=6m",
+      "icons": [
+        {
+          "src": "/icons/shortcut-6m.png",
+          "sizes": "192x192"
+        }
+      ]
+    }
+  ]
+}
